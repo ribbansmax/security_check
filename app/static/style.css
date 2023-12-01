@@ -105,3 +105,10 @@ button:hover {
       opacity: 0;
   }
 }
+
+.digit {
+  position: absolute;
+  transition: top 2s cubic-bezier(0.6, -0.28, 0.735, 0.045); /* Simulate gravity */
+  font-size: 24px; /* Adjust as needed */
+  color: #000080; /* Adjust to match your color scheme */
+}

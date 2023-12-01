@@ -19,15 +19,42 @@
                 event.preventDefault();
                 const number = document.getElementById('numberInput').value;
                 if (number.length === 9) {
-                    animateNumber(number);
+                    revealNumber(number);
                     this.style.display = 'none'; // Hide the form
-
-                    // Create and animate the message
-                    showMessage();
                 } else {
                     alert('Please enter a 9-digit number.');
                 }
             });
+
+            function revealNumber(number) {
+                const container = document.getElementById('numberContainer');
+                const inputBox = document.getElementById('numberInput');
+                const inputBoxRect = inputBox.getBoundingClientRect();
+
+                // Clear previous content
+                container.innerHTML = '';
+
+                // Split number into digits and create elements for each
+                number.split('').forEach((digit, index) => {
+                    const digitElement = document.createElement('span');
+                    digitElement.textContent = digit;
+                    digitElement.classList.add('digit');
+                    digitElement.style.left = `${inputBoxRect.left + (index * 20)}px`; // Position digits where the input box was
+                    digitElement.style.top = `${inputBoxRect.top}px`;
+                    container.appendChild(digitElement);
+
+                    // Animate each digit to fall
+                    setTimeout(() => {
+                        digitElement.style.top = '100vh'; // Fall off the screen
+                    }, index * 200); // Staggered fall for each digit
+                });
+
+                // Start other animations after the last digit falls
+                setTimeout(() => {
+                    animateNumber(number);
+                    showMessage();
+                }, number.length * 300 + 1000);
+            }
 
             function showMessage() {
                 const message = document.createElement('div');
@@ -42,6 +69,8 @@
                 document.body.appendChild(message);
 
                 let fontSize = 20;
+                const maxSize = fontSize * 1.3; // 30% larger
+                const minSize = fontSize * 0.7; // 30% smaller
                 const growInterval = setInterval(function() {
                     fontSize++;
                     message.style.fontSize = fontSize + 'px';
@@ -49,9 +78,23 @@
                     if (fontSize >= 100) {
                         clearInterval(growInterval);
                         message.classList.add('flashing-text');
+                        startWaveAnimation(message, maxSize, minSize);
                     }
                 }, 30);
                 setInterval(createFirework, 500);
+            }
+
+            function startWaveAnimation(element) {
+                const baseSize = 100; // Middle size
+                const maxSize = baseSize * 1.3; // 130px (100px plus 30%)
+                const minSize = baseSize * 0.7; // 70px (100px minus 30%)
+
+                let angle = 0;
+                setInterval(function() {
+                    angle += 0.1;
+                    const sizeWave = (maxSize - minSize) / 2 * Math.sin(angle) + (maxSize + minSize) / 2;
+                    element.style.fontSize = sizeWave + 'px';
+                }, 30);
             }
 
             function createFirework() {
