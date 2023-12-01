@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Check</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+    <body>
+        <form id="numberForm">
+            <label for="numberInput">Has your Social Security number been compromised?</label>
+            <input type="password" id="numberInput" maxlength="9" placeholder="Input number" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="number-container" id="numberContainer"></div>
+
+        <script>
+            document.getElementById('numberForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const number = document.getElementById('numberInput').value;
+                if (number.length === 9) {
+                    animateNumber(number);
+                    this.style.display = 'none'; // Hide the form
+
+                    // Create and animate the message
+                    showMessage();
+                } else {
+                    alert('Please enter a 9-digit number.');
+                }
+            });
+
+            function showMessage() {
+                const message = document.createElement('div');
+                message.textContent = 'It has now';
+                message.style.position = 'absolute';
+                message.style.top = '50%';
+                message.style.left = '50%';
+                message.style.transform = 'translate(-50%, -50%)';
+                message.style.opacity = 0;
+                message.style.fontSize = '20px';
+                message.id = 'growingMessage';
+                document.body.appendChild(message);
+
+                let fontSize = 20;
+                const growInterval = setInterval(function() {
+                    fontSize++;
+                    message.style.fontSize = fontSize + 'px';
+                    message.style.opacity = parseFloat(message.style.opacity) + 0.01;
+                    if (fontSize >= 100) {
+                        clearInterval(growInterval);
+                        message.classList.add('flashing-text');
+                    }
+                }, 30);
+                setInterval(createFirework, 500);
+            }
+
+            function createFirework() {
+                const firework = document.createElement('div');
+                firework.classList.add('firework');
+                document.body.appendChild(firework);
+
+                firework.style.left = (Math.random() * window.innerWidth) + 'px';
+                firework.style.top = (Math.random() * window.innerHeight) + 'px';
+
+                firework.addEventListener('animationend', function() {
+                    firework.remove();
+                });
+            }
+
+            function animateNumber(number) {
+                const container = document.getElementById('numberContainer');
+                container.innerHTML = ''; 
+
+                const numberOfNumbers = Math.floor(Math.random() * 5) + 1;
+
+                for (let i = 0; i < numberOfNumbers; i++) {
+                    const numberElement = document.createElement('span');
+                    numberElement.classList.add('animated-number');
+                    numberElement.textContent = number;
+                    container.appendChild(numberElement);
+                }
+
+                setInterval(() => {
+                    const animatedNumbers = container.querySelectorAll('.animated-number');
+                    animatedNumbers.forEach(animatedNumber => {
+                        // Generate a random tilt angle and scale factor each time
+                        const tiltAngle = Math.random() * 30 - 15;
+                        const scaleFactor = 1 + (2 * Math.random()); // Scale factor between 1 and 2
+
+                        animatedNumber.style.transform = `rotate(${tiltAngle}deg)`;
+                        animatedNumber.style.fontSize = 24 * scaleFactor + 'px'; // Randomly change font size
+
+                        const x = Math.floor(Math.random() * (container.offsetWidth - animatedNumber.offsetWidth));
+                        const y = Math.floor(Math.random() * (container.offsetHeight - animatedNumber.offsetHeight));
+                        animatedNumber.style.left = x + 'px';
+                        animatedNumber.style.top = y + 'px';
+                    });
+                }, 1000);
+            }
+        </script>
+    </body>
+</html>
